@@ -19,11 +19,20 @@ poll((s, e) => {
   $('#bal').textContent = s.balance_sol == null ? '—' : s.balance_sol.toFixed(4) + ' SOL';
   $('#equity').textContent = s.equity_sol == null ? '—' : s.equity_sol.toFixed(4) + ' SOL';
   $('#fx').textContent = `$${s.sol_usd ?? '—'} · €${eur.toFixed(2)}`;
-  $('#life').textContent = s.life?.n ? `#${s.life.n} da ${s.life.started_iso?.slice(11, 16)}` : '—';
-  // P&L
-  $('#pnl-date').textContent = s.date;
+  const life = s.life || {}, started = life.started_iso || '';
+  $('#life').textContent = life.n ? `#${life.n} da ${started.slice(11, 16) || '—'}` : '—';
+  // P&L of the current life (daily numbers stay in pnl_today)
+  const today = s.pnl_today || {};
+  const lifeLbl = life.n ? `da inizio vita #${life.n}` : 'da inizio vita';
+  const lifeWhen = started ? ` · ${started.slice(8, 10)}/${started.slice(5, 7)} ${started.slice(11, 16)}` : '';
+  $('#pnl-date').textContent = lifeLbl + lifeWhen;
   const big = $('#pnl-sol'); big.textContent = sgn(p.total, 4) + ' SOL'; big.className = 'big ' + cls(p.total);
   $('#pnl-eur').textContent = sgn(p.total * eur, 2) + ' €'; $('#pnl-eur').className = 'eur ' + cls(p.total);
+  const elToday = $('#pnl-today');
+  if (elToday) {
+    if (today.total == null) elToday.textContent = '';
+    else elToday.innerHTML = `oggi <b class="${cls(today.total)}">${sgn(today.total, 4)} SOL</b> · <b class="${cls(today.total)}">${sgn(today.total * eur, 2)} €</b> · ${today.trades ?? 0} trade`;
+  }
   $('#real').innerHTML = `<span class="${cls(p.realized)}">${sgn(p.realized)}</span>`; $('#unreal').innerHTML = `<span class="${cls(p.unrealized)}">${sgn(p.unrealized)}</span>`;
   $('#pctb').innerHTML = `<span class="${cls(p.pct_budget)}">${sgn(p.pct_budget, 1)}%</span>`;
   $('#kill').innerHTML = p.halted ? '<span class="dn">ATTIVO</span>' : `<span class="up">NO</span> <small class="mut">(${s.rules.daily_stop ? '-' + s.rules.daily_max_loss + '%' : 'off'})</small>`;
@@ -37,7 +46,7 @@ poll((s, e) => {
     <td>${x.opened} <small class="mut">${x.age_min != null ? Math.round(x.age_min) + 'm' : ''}</small></td><td class="r">${f4(x.cost)}</td><td class="r">${f4(x.value)}</td>
     <td class="r ${cls(x.pct)}"><b>${sgn(x.pct, 1)}%</b></td><td class="r mut">${sgn(x.peak, 1)}%</td></tr>`).join('') : '<tr><td colspan=6 class="mut">nessuna posizione aperta</td></tr>';
   // trades feed
-  $('#ntrades').textContent = `${s.feed.length} ultimi · oggi ${p.trades}`;
+  $('#ntrades').textContent = `${s.feed.length} ultimi · vita ${p.trades}` + (today.trades != null ? ` · oggi ${today.trades}` : '');
   $('#trades').innerHTML = s.feed.slice(0, 34).map(t => { const k = t.t + t.sym; const nw = seenTrades.size && !seenTrades.has(k);
     return `<tr class="${nw ? 'new' : ''}"><td class="mut">${t.t}</td><td>${esc(t.sym)}</td><td class="r ${cls(t.pnl)}">${sgn(t.pnl, 4)}</td><td class="r ${cls(t.pct)}"><b>${sgn(t.pct, 1)}%</b></td><td title="${esc(t.reason)}">${shortReason(t.reason)}</td></tr>`; }).join('');
   seenTrades = new Set(s.feed.map(t => t.t + t.sym));

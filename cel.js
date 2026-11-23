@@ -14,11 +14,17 @@ const f4 = v => v == null ? '—' : Number(v).toFixed(4);
 const bar = p => `<div class="bar"><i style="left:50%;width:${Math.min(50, Math.abs(p) * 2)}%;${p < 0 ? 'transform:translateX(-100%);' : ''}background:${p >= 0 ? 'var(--g)' : 'var(--r)'}"></i></div>`;
 poll(s => {
   if (!s) { err.style.display = 'block'; err.textContent = 'Connessione persa · riprovo…'; return; }
-  err.style.display = 'none'; const p = s.pnl, eur = s.eur_per_sol;
+  err.style.display = 'none'; const p = s.pnl, eur = s.eur_per_sol, today = s.pnl_today || {}, life = s.life || {};
   $('#mode').textContent = s.mode; $('#mode').classList.toggle('live', s.mode === 'LIVE');
+  const lab = $('#pnl-label'); if (lab) lab.textContent = life.n ? `P&L VITA #${life.n}` : 'P&L VITA';
   $('#pnl-sol').textContent = sgn(p.total, 4) + ' SOL'; $('#pnl-sol').className = 'big ' + cls(p.total);
   $('#pnl-eur').textContent = sgn(p.total * eur, 2) + ' €'; $('#pnl-eur').className = 'eur ' + cls(p.total);
-  $('#c-pct').innerHTML = `<span class="${cls(p.pct_budget)}">${sgn(p.pct_budget, 1)}%</span> budget`;
+  const elToday = $('#pnl-today');
+  if (elToday) {
+    if (today.total == null) elToday.textContent = '';
+    else elToday.innerHTML = `oggi <b class="${cls(today.total)}">${sgn(today.total, 4)} SOL</b> · ${today.trades ?? 0} trade`;
+  }
+  $('#c-pct').innerHTML = `<span class="${cls(p.pct_budget)}">${sgn(p.pct_budget, 1)}%</span> da inizio vita`;
   $('#c-wl').innerHTML = `${p.trades} trade · <span class="up">${p.wins}V</span> <span class="dn">${p.losses}P</span>`;
   $('#c-alive').innerHTML = s.running ? `<span class="up">● attivo</span> · log ${dur(s.log_age)} fa` : '<span class="dn">● fermo</span>';
   $('#real').innerHTML = `<span class="${cls(p.realized)}">${sgn(p.realized)}</span>`; $('#unreal').innerHTML = `<span class="${cls(p.unrealized)}">${sgn(p.unrealized)}</span>`;
@@ -28,9 +34,9 @@ poll(s => {
   $('#pos').innerHTML = s.positions.length ? s.positions.map(x => `<div class="item pos"><div class="sym">${esc(x.sym)}${x.partial ? ' <small class="up">½TP</small>' : ''}</div><div class="pct ${cls(x.pct)}">${sgn(x.pct, 1)}%</div>
     <div class="sub">${x.opened} · ${Math.round(x.age_min || 0)} min · picco ${sgn(x.peak, 1)}%</div><div class="sub2">${f4(x.cost)} → ${f4(x.value)}</div>${bar(x.pct)}</div>`).join('') : '<div class="empty">Nessuna posizione aperta</div>';
   drawEquity($('#eq'), s.curve); drawHist($('#hist'), s.hist);
-  $('#ntr').textContent = `oggi ${p.trades}`;
+  $('#ntr').textContent = `vita ${p.trades}` + (today.trades != null ? ` · oggi ${today.trades}` : '');
   $('#trades').innerHTML = s.feed.slice(0, 40).map(t => `<div class="item ${t.pnl >= 0 ? 'win' : 'loss'}"><div class="sym">${esc(t.sym)}</div><div class="pct ${cls(t.pct)}">${sgn(t.pct, 1)}%</div>
-    <div class="sub">${t.t} · ${shortReason(t.reason)}</div><div class="sub2 ${cls(t.pnl)}">${sgn(t.pnl, 4)} SOL</div></div>`).join('') || '<div class="empty">Nessun trade oggi</div>';
+    <div class="sub">${t.t} · ${shortReason(t.reason)}</div><div class="sub2 ${cls(t.pnl)}">${sgn(t.pnl, 4)} SOL</div></div>`).join('') || '<div class="empty">Nessun trade in questa vita</div>';
   const F = s.funnel, mx = Math.max(1, F.valutati);
   $('#funnel').innerHTML = `<div class="fn in"><span>Valutati</span><div class="bx"><i style="width:100%"></i></div><span class="n">${F.valutati}</span></div>` +
     F.stages.filter(([, v]) => v).map(([k, v]) => `<div class="fn"><span>✕ ${STAGE_IT[k] || k}</span><div class="bx"><i style="width:${Math.min(100, 100 * v / mx)}%"></i></div><span class="n dn">${v}</span></div>`).join('') +

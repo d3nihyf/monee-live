@@ -27,18 +27,19 @@ if((page===''||page==='index.html')&&pref!=='pc'&&(/Mobi|Android|iPhone|iPod/i.t
 </header>
 <main>
  <section class="col left">
-  <div class="panel pnl"><h3><i class="g"></i>P&L OGGI <em id="pnl-date"></em></h3>
+  <div class="panel pnl"><h3><i class="g"></i>P&L VITA <em id="pnl-date"></em></h3>
    <div class="big" id="pnl-sol">—</div><div class="eur" id="pnl-eur">—</div>
+   <div class="today-pnl" id="pnl-today"></div>
    <div class="kv4">
     <div><label>REALIZZATO</label><b id="real">—</b></div><div><label>APERTO</label><b id="unreal">—</b></div>
     <div><label>% BUDGET</label><b id="pctb">—</b></div><div><label>KILL SWITCH</label><b id="kill">—</b></div>
     <div><label>TRADE</label><b id="ntr">—</b></div><div><label>VINTI / PERSI</label><b id="wl">—</b></div>
     <div><label>WIN RATE</label><b id="wr">—</b></div><div><label>STORICO VITA</label><b id="allt">—</b></div>
    </div></div>
-  <div class="panel"><h3><i class="c"></i>CURVA EQUITY · P&L CUMULATIVO (SOL) <em>CANDELE 30 MIN</em></h3><canvas id="eq"></canvas></div>
+  <div class="panel"><h3><i class="c"></i>CURVA EQUITY · P&L CUMULATIVO (SOL) <em>DA INIZIO VITA</em></h3><canvas id="eq"></canvas></div>
   <div class="panel"><h3><i class="y"></i>POSIZIONI APERTE <em id="npos"></em></h3>
    <table class="t"><thead><tr><th>TOKEN</th><th>APERTA</th><th class="r">COSTO</th><th class="r">VALORE</th><th class="r">%</th><th class="r">PICCO</th></tr></thead><tbody id="pos"></tbody></table></div>
-  <div class="panel histp"><h3><i class="m"></i>DISTRIBUZIONE RENDIMENTI · TRADE CHIUSI OGGI</h3><canvas id="hist"></canvas></div>
+  <div class="panel histp"><h3><i class="m"></i>DISTRIBUZIONE RENDIMENTI · TRADE CHIUSI DELLA VITA</h3><canvas id="hist"></canvas></div>
  </section>
  <section class="col center">
   <div class="panel globe"><h3><i class="c"></i>RETE TOKEN LIVE <em>verde = board · ciano = rugcheck ok · rosso = scartato · giallo = posizione aperta</em></h3>

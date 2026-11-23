@@ -52,23 +52,56 @@ export function fitCanvas(c) {
   if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
   const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return [g, w, h];
 }
-const toSec = t => { const [a, b, c] = t.split(':').map(Number); return a * 3600 + b * 60 + (c || 0); };
+function parseCurveT(t) {
+  if (t == null || t === '<live>') return null;
+  const s = String(t);
+  if (/T/.test(s) || (s.length > 8 && /\d{4}-\d{2}-\d{2}/.test(s))) {
+    const ms = Date.parse(s);
+    if (!isNaN(ms)) return ms / 1000;
+  }
+  const p = s.split(':');
+  if (p.length >= 2) {
+    const a = +p[0], b = +p[1], c = +(p[2] || 0);
+    if ([a, b, c].every(n => !isNaN(n))) return a * 3600 + b * 60 + c;
+  }
+  return null;
+}
 export function drawEquity(c, curve, opt = {}) {
   const [g, w, h] = fitCanvas(c); g.clearRect(0, 0, w, h);
-  const pad = {l: 44, r: 8, t: 8, b: 16}; const pts = [[ '00:00:00', 0 ], ...curve];
-  const xs = pts.map(p => toSec(p[0])), ys = pts.map(p => p[1]);
+  if (!curve || !curve.length) return;
+  const pad = {l: 44, r: 8, t: 8, b: 16};
+  const raw = curve.filter(p => p && p.length >= 2);
+  let pts = raw.map(p => [parseCurveT(p[0]), +p[1], p[0]]).filter(p => p[0] != null && !isNaN(p[1]));
+  if (!pts.length) return;
+  const iso = raw.some(p => /T/.test(String(p[0])));
+  if (!iso && pts[0][1] !== 0) pts = [[parseCurveT('00:00:00'), 0, '00:00:00'], ...pts];
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
   const x0 = Math.min(...xs), x1 = Math.max(x0 + 60, Math.max(...xs));
   let y0 = Math.min(0, ...ys), y1 = Math.max(0, ...ys); const sp = (y1 - y0) || 0.01; y0 -= sp * .08; y1 += sp * .08;
   const X = v => pad.l + (v - x0) / (x1 - x0) * (w - pad.l - pad.r), Y = v => pad.t + (y1 - v) / (y1 - y0) * (h - pad.t - pad.b);
   g.font = '9px "JetBrains Mono", monospace'; g.fillStyle = K.mut; g.strokeStyle = K.grid; g.lineWidth = 1;
   for (let i = 0; i <= 4; i++) { const v = y0 + (y1 - y0) * i / 4, y = Y(v); g.beginPath(); g.moveTo(pad.l, y); g.lineTo(w - pad.r, y); g.stroke(); g.fillText(v.toFixed(3), 2, y + 3); }
-  for (let hh = Math.ceil(x0 / 7200) * 2; hh * 3600 <= x1; hh += 2) { const x = X(hh * 3600); g.beginPath(); g.moveTo(x, pad.t); g.lineTo(x, h - pad.b); g.stroke(); g.fillText(String(hh).padStart(2, '0') + ':00', x - 12, h - 4); }
+  const span = x1 - x0;
+  if (iso) {
+    const step = span > 3 * 86400 ? 12 * 3600 : span > 18 * 3600 ? 4 * 3600 : span > 6 * 3600 ? 2 * 3600 : 1800;
+    const fmt = t => {
+      const d = new Date(t * 1000);
+      const lab = d.toLocaleString('it-IT', {timeZone: 'Europe/Rome', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false});
+      if (span < 36 * 3600) return lab.slice(-5);
+      return lab.replace(',', '');
+    };
+    for (let t = Math.ceil(x0 / step) * step; t <= x1; t += step) {
+      const x = X(t); g.beginPath(); g.moveTo(x, pad.t); g.lineTo(x, h - pad.b); g.stroke(); g.fillText(fmt(t), x - 14, h - 4);
+    }
+  } else {
+    for (let hh = Math.ceil(x0 / 7200) * 2; hh * 3600 <= x1; hh += 2) { const x = X(hh * 3600); g.beginPath(); g.moveTo(x, pad.t); g.lineTo(x, h - pad.b); g.stroke(); g.fillText(String(hh).padStart(2, '0') + ':00', x - 12, h - 4); }
+  }
   g.strokeStyle = K.zero; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(pad.l, Y(0)); g.lineTo(w - pad.r, Y(0)); g.stroke(); g.setLineDash([]);
-  // candles per 30-min bucket of cumulative P&L
+  // candles: 30 min intra-day, coarser over a multi-day life
   if (opt.candles !== false) {
-    const B = 1800, buckets = new Map(); let prev = 0;
+    const B = iso && span > 36 * 3600 ? 3600 : 1800, buckets = new Map(); let prev = 0;
     pts.forEach((p, i) => { const k = Math.floor(xs[i] / B); if (!buckets.has(k)) buckets.set(k, {o: prev, h: prev, l: prev, c: prev}); const b = buckets.get(k); b.h = Math.max(b.h, p[1]); b.l = Math.min(b.l, p[1]); b.c = p[1]; prev = p[1]; });
-    const bw = Math.max(2, (X(B) - X(0)) * .6);
+    const bw = Math.max(2, (X(x0 + B) - X(x0)) * .6);
     buckets.forEach((b, k) => { const x = X(k * B + B / 2), up = b.c >= b.o; g.strokeStyle = g.fillStyle = up ? `rgba(${K.upa},.55)` : `rgba(${K.dna},.55)`;
       g.beginPath(); g.moveTo(x, Y(b.h)); g.lineTo(x, Y(b.l)); g.stroke(); const yt = Y(Math.max(b.o, b.c)), yb = Y(Math.min(b.o, b.c)); g.fillRect(x - bw / 2, yt, bw, Math.max(1, yb - yt)); });
   }

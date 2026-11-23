@@ -12,9 +12,10 @@ window.toggleTheme=function(){localStorage.setItem('monee_theme',document.docume
 <section class="hero">
  <div id="torus"></div>
  <div class="hero-in">
-  <label>P&L OGGI</label>
+  <label id="pnl-label">P&L VITA</label>
   <div class="big" id="pnl-sol">—</div>
   <div class="eur" id="pnl-eur">—</div>
+  <div class="today-pnl" id="pnl-today"></div>
   <div class="chips"><span id="c-pct">—</span><span id="c-wl">—</span><span id="c-alive">—</span></div>
  </div>
 </section>
@@ -25,10 +26,10 @@ window.toggleTheme=function(){localStorage.setItem('monee_theme',document.docume
 <nav id="tabs"><button data-i="0" class="on">Posizioni</button><button data-i="1">Trade</button><button data-i="2">Decisioni</button><button data-i="3">Statistiche</button></nav>
 <main id="pager">
  <section class="page" id="pg-pos"><h3>Posizioni aperte <em id="npos"></em></h3><div id="pos"></div>
-  <h3>Curva P&L oggi</h3><div class="card"><canvas id="eq"></canvas></div></section>
+  <h3>Curva P&L da inizio vita</h3><div class="card"><canvas id="eq"></canvas></div></section>
  <section class="page"><h3>Trade chiusi <em id="ntr"></em></h3><div id="trades"></div></section>
  <section class="page"><h3>Funnel decisioni oggi</h3><div class="card" id="funnel"></div><h3>Ultime decisioni</h3><div id="dec"></div></section>
- <section class="page"><h3>Per strategia</h3><div id="strat"></div><h3>Rendimenti trade di oggi</h3><div class="card"><canvas id="hist"></canvas></div>
+ <section class="page"><h3>Per strategia</h3><div id="strat"></div><h3>Rendimenti trade della vita</h3><div class="card"><canvas id="hist"></canvas></div>
   <h3>Regole attive</h3><div class="card rules" id="rules"></div>
   <h3>Bot</h3><div class="card rules" id="sys"></div>
   <a class="switch" href="index.html?v=pc">🖥 Versione PC</a><a class="switch" href="#" onclick="toggleTheme();return false">♡ / ◆ Cambia tema</a></section>
