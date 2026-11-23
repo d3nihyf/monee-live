@@ -1,0 +1,37 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><link rel="icon" href="data:,"><script>(function(){var q=new URLSearchParams(location.search),t=q.get('theme');if(t==='neon'||t==='pink')localStorage.setItem('monee_theme',t);t=localStorage.getItem('monee_theme')||'pink';document.documentElement.dataset.theme=t;})();
+window.toggleTheme=function(){localStorage.setItem('monee_theme',document.documentElement.dataset.theme==='neon'?'pink':'neon');var u=new URL(location);u.searchParams.delete('theme');location.replace(u);};</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#14060f">
+<meta name="apple-mobile-web-app-capable" content="yes"><title>MONEE · CEL</title>
+<link rel="stylesheet" href="cel.css"></head><body>
+<div id="splash"><div class="sp-in"><div class="sp-logo">MONEE <span class="blossom blossom-slot">✿</span><br>PUMP.FUN DESK <span class="sparkle">✨</span></div><pre id="sp-log"></pre><div class="sp-bar"><i></i></div></div></div>
+<header>
+ <div class="brand"><i class="dot"></i>MONEE <span class="heart">♡</span> <span>DESK</span></div>
+ <b id="mode" class="badge">—</b>
+ <div class="clock" id="clock">--:--:--</div>
+</header>
+<section class="hero">
+ <div id="torus"></div>
+ <div class="hero-in">
+  <label>P&L OGGI</label>
+  <div class="big" id="pnl-sol">—</div>
+  <div class="eur" id="pnl-eur">—</div>
+  <div class="chips"><span id="c-pct">—</span><span id="c-wl">—</span><span id="c-alive">—</span></div>
+ </div>
+</section>
+<div class="kpis">
+ <div><label>REALIZZATO</label><b id="real">—</b></div><div><label>APERTO</label><b id="unreal">—</b></div>
+ <div><label>EQUITY</label><b id="equity">—</b></div><div><label>KILL SWITCH</label><b id="kill">—</b></div>
+</div>
+<nav id="tabs"><button data-i="0" class="on">Posizioni</button><button data-i="1">Trade</button><button data-i="2">Decisioni</button><button data-i="3">Statistiche</button></nav>
+<main id="pager">
+ <section class="page" id="pg-pos"><h3>Posizioni aperte <em id="npos"></em></h3><div id="pos"></div>
+  <h3>Curva P&L oggi</h3><div class="card"><canvas id="eq"></canvas></div></section>
+ <section class="page"><h3>Trade chiusi <em id="ntr"></em></h3><div id="trades"></div></section>
+ <section class="page"><h3>Funnel decisioni oggi</h3><div class="card" id="funnel"></div><h3>Ultime decisioni</h3><div id="dec"></div></section>
+ <section class="page"><h3>Per strategia</h3><div id="strat"></div><h3>Rendimenti trade di oggi</h3><div class="card"><canvas id="hist"></canvas></div>
+  <h3>Regole attive</h3><div class="card rules" id="rules"></div>
+  <h3>Bot</h3><div class="card rules" id="sys"></div>
+  <a class="switch" href="index.html?v=pc">🖥 Versione PC</a><a class="switch" href="#" onclick="toggleTheme();return false">♡ / ◆ Cambia tema</a></section>
+</main>
+<script type="module" src="cel.js"></script>
+</body></html>

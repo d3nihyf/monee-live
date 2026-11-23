@@ -1,0 +1,69 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><link rel="icon" href="data:,"><script>(function(){var q=new URLSearchParams(location.search),t=q.get('theme');if(t==='neon'||t==='pink')localStorage.setItem('monee_theme',t);t=localStorage.getItem('monee_theme')||'pink';document.documentElement.dataset.theme=t;})();
+window.toggleTheme=function(){localStorage.setItem('monee_theme',document.documentElement.dataset.theme==='neon'?'pink':'neon');var u=new URL(location);u.searchParams.delete('theme');location.replace(u);};</script><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MONEE // PUMP.FUN DESK</title>
+<script>
+// telefoni → cel.html (salvo scelta manuale ?v=pc)
+(function(){var q=location.search;if(q.indexOf('v=pc')>=0){localStorage.setItem('monee_view','pc');}
+if(q.indexOf('v=auto')>=0)localStorage.removeItem('monee_view');
+var pref=localStorage.getItem('monee_view');
+var page=(location.pathname.split('/').pop()||'');
+if((page===''||page==='index.html')&&pref!=='pc'&&(/Mobi|Android|iPhone|iPod/i.test(navigator.userAgent)||(screen.width<700&&'ontouchstart' in window)))location.replace('cel.html'+q);})();
+</script>
+<link rel="stylesheet" href="desk.css"></head><body>
+<div id="splash"><div class="sp-in"><div class="sp-logo">MONEE <span class="blossom blossom-slot">✿</span> PUMP.FUN DESK <span class="sparkle">✨</span></div><pre id="sp-log"></pre><div class="sp-bar"><i></i></div></div></div>
+<header>
+ <div class="brand"><i class="dot"></i>MONEE <span class="heart">♡</span> <span>PUMP.FUN DESK</span></div>
+ <div class="hb"><label>MODALITÀ</label><b id="mode" class="badge">—</b></div>
+ <div class="hb"><label>BOT</label><b id="alive">—</b></div>
+ <div class="hb"><label>UPTIME</label><b id="uptime">—</b></div>
+ <div class="hb"><label>ULTIMO LOG</label><b id="logage">—</b></div>
+ <div class="hb"><label>HEARTBEAT</label><b id="hbeat">—</b></div>
+ <div class="hb"><label>SALDO ON-CHAIN</label><b id="bal">—</b></div>
+ <div class="hb"><label>EQUITY PAPER</label><b id="equity">—</b></div>
+ <div class="hb"><label>SOL/USD · EUR/SOL</label><b id="fx">—</b></div>
+ <div class="hb"><label>VITA</label><b id="life">—</b></div>
+ <a class="switch" href="cel.html">📱 VERSIONE CEL</a><button class="thbtn" onclick="toggleTheme()" title="cambia tema">♡/◆</button>
+ <div class="clock"><b id="clock">--:--:--</b><small id="date">EUROPE/ROME</small></div>
+</header>
+<main>
+ <section class="col left">
+  <div class="panel pnl"><h3><i class="g"></i>P&L OGGI <em id="pnl-date"></em></h3>
+   <div class="big" id="pnl-sol">—</div><div class="eur" id="pnl-eur">—</div>
+   <div class="kv4">
+    <div><label>REALIZZATO</label><b id="real">—</b></div><div><label>APERTO</label><b id="unreal">—</b></div>
+    <div><label>% BUDGET</label><b id="pctb">—</b></div><div><label>KILL SWITCH</label><b id="kill">—</b></div>
+    <div><label>TRADE</label><b id="ntr">—</b></div><div><label>VINTI / PERSI</label><b id="wl">—</b></div>
+    <div><label>WIN RATE</label><b id="wr">—</b></div><div><label>STORICO VITA</label><b id="allt">—</b></div>
+   </div></div>
+  <div class="panel"><h3><i class="c"></i>CURVA EQUITY · P&L CUMULATIVO (SOL) <em>CANDELE 30 MIN</em></h3><canvas id="eq"></canvas></div>
+  <div class="panel"><h3><i class="y"></i>POSIZIONI APERTE <em id="npos"></em></h3>
+   <table class="t"><thead><tr><th>TOKEN</th><th>APERTA</th><th class="r">COSTO</th><th class="r">VALORE</th><th class="r">%</th><th class="r">PICCO</th></tr></thead><tbody id="pos"></tbody></table></div>
+  <div class="panel histp"><h3><i class="m"></i>DISTRIBUZIONE RENDIMENTI · TRADE CHIUSI OGGI</h3><canvas id="hist"></canvas></div>
+ </section>
+ <section class="col center">
+  <div class="panel globe"><h3><i class="c"></i>RETE TOKEN LIVE <em>verde = board · ciano = rugcheck ok · rosso = scartato · giallo = posizione aperta</em></h3>
+   <div id="torus"></div>
+   <div class="ov tl"><label>TOKEN VALUTATI OGGI</label><b id="o-eval">—</b><label>IN BOARD</label><b id="o-board" class="up">—</b><label>ACQUISTI</label><b id="o-buy" class="yel">—</b></div>
+   <div class="ov tr"><label>SCANNER</label><div id="scan"></div></div>
+   <div class="ov bl"><label>CHIUSURE OGGI</label><div id="reasons"></div></div>
+   <div class="ov br"><label>RPC</label><div id="rpc"></div></div>
+  </div>
+  <div class="row2">
+   <div class="panel"><h3><i class="r"></i>FUNNEL DECISIONI · OGGI <em id="fun-tot"></em></h3><div id="funnel"></div></div>
+   <div class="panel"><h3><i class="r"></i>MOTIVI DI SCARTO PRINCIPALI</h3><div id="topreasons"></div></div>
+  </div>
+  <div class="panel feedp"><h3><i class="c"></i>FEED DECISIONI LIVE</h3><div class="feed" id="dec"></div></div>
+ </section>
+ <section class="col right">
+  <div class="panel grow"><h3><i class="g"></i>TRADE CHIUSI · LIVE <em id="ntrades"></em></h3>
+   <table class="t"><thead><tr><th>ORA</th><th>TOKEN</th><th class="r">P&L SOL</th><th class="r">%</th><th>MOTIVO</th></tr></thead><tbody id="trades"></tbody></table></div>
+  <div class="panel"><h3><i class="b"></i>STATISTICHE PER STRATEGIA <em>features.csv</em></h3>
+   <table class="t"><thead><tr><th>BOT</th><th class="r">CHIUSI</th><th class="r">WIN%</th><th class="r">P&L SOL</th><th class="r">MEDIA%</th><th class="r">OGGI</th><th>STATO</th></tr></thead><tbody id="strat"></tbody></table></div>
+  <div class="panel"><h3><i class="y"></i>BOARD · CANDIDATI MIGLIORI</h3>
+   <table class="t"><thead><tr><th>TOKEN</th><th class="r">SCORE</th><th>CONFERME</th><th>RUG</th><th class="r">ETÀ</th></tr></thead><tbody id="board"></tbody></table></div>
+  <div class="panel"><h3><i class="m"></i>REGOLE ATTIVE · config.json</h3><div class="rules" id="rules"></div></div>
+ </section>
+</main>
+<footer><div class="tape"><div id="tape"></div></div><div class="logline" id="logline"></div></footer>
+<script type="module" src="desk.js"></script>
+</body></html>
