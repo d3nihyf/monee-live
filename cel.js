@@ -34,7 +34,7 @@ poll(s => {
   $('#pos').innerHTML = s.positions.length ? s.positions.map(x => `<div class="item pos"><div class="sym">${esc(x.sym)}${x.partial ? ' <small class="up">½TP</small>' : ''}</div><div class="pct ${cls(x.pct)}">${sgn(x.pct, 1)}%</div>
     <div class="sub">${x.opened} · ${Math.round(x.age_min || 0)} min · picco ${sgn(x.peak, 1)}%</div><div class="sub2">${f4(x.cost)} → ${f4(x.value)}</div>${bar(x.pct)}</div>`).join('') : '<div class="empty">Nessuna posizione aperta</div>';
   drawEquity($('#eq'), s.curve); drawHist($('#hist'), s.hist);
-  $('#ntr').textContent = `vita ${p.trades}` + (today.trades != null ? ` · oggi ${today.trades}` : '');
+  $('#ntr').textContent = (life.n ? `vita #${life.n} · ` : '') + `${p.trades} trade` + (today.trades != null ? ` · oggi ${today.trades}` : '');  // 2026-11-26: life number + trades in this life
   $('#trades').innerHTML = s.feed.slice(0, 40).map(t => `<div class="item ${t.pnl >= 0 ? 'win' : 'loss'}"><div class="sym">${esc(t.sym)}</div><div class="pct ${cls(t.pct)}">${sgn(t.pct, 1)}%</div>
     <div class="sub">${t.t} · ${shortReason(t.reason)}</div><div class="sub2 ${cls(t.pnl)}">${sgn(t.pnl, 4)} SOL</div></div>`).join('') || '<div class="empty">Nessun trade in questa vita</div>';
   const F = s.funnel, mx = Math.max(1, F.valutati);

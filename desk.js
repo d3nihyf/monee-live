@@ -46,7 +46,7 @@ poll((s, e) => {
     <td>${x.opened} <small class="mut">${x.age_min != null ? Math.round(x.age_min) + 'm' : ''}</small></td><td class="r">${f4(x.cost)}</td><td class="r">${f4(x.value)}</td>
     <td class="r ${cls(x.pct)}"><b>${sgn(x.pct, 1)}%</b></td><td class="r mut">${sgn(x.peak, 1)}%</td></tr>`).join('') : '<tr><td colspan=6 class="mut">nessuna posizione aperta</td></tr>';
   // trades feed
-  $('#ntrades').textContent = `${s.feed.length} ultimi · vita ${p.trades}` + (today.trades != null ? ` · oggi ${today.trades}` : '');
+  $('#ntrades').textContent = (life.n ? `vita #${life.n} · ` : '') + `${p.trades} trade` + (today.trades != null ? ` · oggi ${today.trades}` : '');  // 2026-11-26: life number + trades in this life
   $('#trades').innerHTML = s.feed.slice(0, 34).map(t => { const k = t.t + t.sym; const nw = seenTrades.size && !seenTrades.has(k);
     return `<tr class="${nw ? 'new' : ''}"><td class="mut">${t.t}</td><td>${esc(t.sym)}</td><td class="r ${cls(t.pnl)}">${sgn(t.pnl, 4)}</td><td class="r ${cls(t.pct)}"><b>${sgn(t.pct, 1)}%</b></td><td title="${esc(t.reason)}">${shortReason(t.reason)}</td></tr>`; }).join('');
   seenTrades = new Set(s.feed.map(t => t.t + t.sym));
